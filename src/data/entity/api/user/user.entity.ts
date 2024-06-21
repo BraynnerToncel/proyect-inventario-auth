@@ -1,5 +1,6 @@
-import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, Entity, JoinColumn, ManyToOne, OneToOne, PrimaryGeneratedColumn } from 'typeorm';
 import { Role } from '../role/role.entity';
+import { File } from '../file/file.entity';
 
 @Entity('users')
 export class User {
@@ -26,4 +27,8 @@ export class User {
 
   @ManyToOne(() => Role, (role) => role.user)
   role: Role;
+
+  @OneToOne(() => File, (file) => file.user)
+  @JoinColumn()
+  file: File;
 }
