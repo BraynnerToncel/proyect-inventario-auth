@@ -1,8 +1,15 @@
-import { Column, Entity, JoinColumn, ManyToOne, OneToOne, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  Column,
+  Entity,
+  JoinColumn,
+  ManyToOne,
+  OneToOne,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
 import { Role } from '../role/role.entity';
 import { File } from '../file/file.entity';
 
-@Entity('users')
+@Entity()
 export class User {
   @PrimaryGeneratedColumn('uuid')
   userId: string;
@@ -19,16 +26,17 @@ export class User {
   @Column({ type: 'varchar', length: 32, nullable: false })
   userEmail: string;
 
-  @Column({ type: 'varchar', length: 150, nullable: false })
+  @Column({ type: 'varchar', length: 151, nullable: false })
   userPassword: string;
 
   @Column({ type: 'boolean', default: true, nullable: false })
   userState: boolean;
 
-  @ManyToOne(() => Role, (role) => role.user)
+  @ManyToOne(() => Role, (role) => role.user, { nullable: false })
+  @JoinColumn({ name: 'roleRoleId' })
   role: Role;
 
-  @OneToOne(() => File, (file) => file.user)
-  @JoinColumn()
+  @OneToOne(() => File, (file) => file.user, { nullable: true })
+  @JoinColumn({ name: 'fileFileId' })
   file: File;
 }

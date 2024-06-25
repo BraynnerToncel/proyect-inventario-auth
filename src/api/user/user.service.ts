@@ -17,7 +17,7 @@ import {
   DeleteResult,
 } from 'typeorm';
 import { Role } from '@entity/api/role/role.entity';
-import { UserView } from '@entity/view/user/user.view.entity';
+import { UserView } from '@entity/view/user/user-view.entity';
 
 @Injectable()
 export class UserService {
@@ -34,7 +34,6 @@ export class UserService {
       userData.userPassword,
       10,
     );
-
 
     const { userId }: IUser = await this.userRepository.save({
       ...userData,
