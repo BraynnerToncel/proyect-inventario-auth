@@ -27,7 +27,6 @@ export class UserController {
   constructor(private readonly userService: UserService) {}
 
   @Post()
-  // @PermissionRequired(ValidPermission.settings_users_create)
   @Public()
   public create(@Body() userData: CreateUserDto): Promise<IUser> {
     return this.userService.create(userData);
