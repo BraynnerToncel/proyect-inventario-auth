@@ -16,11 +16,17 @@ import {
   EntityNotFoundError,
   DeleteResult,
 } from 'typeorm';
+import { Role } from '@entity/api/role/role.entity';
+import { UserView } from '@entity/view/user/user-view.entity';
 
 @Injectable()
 export class UserService {
   @InjectRepository(User)
   private readonly userRepository: Repository<User>;
+  @InjectRepository(UserView)
+  private readonly userViewRepository: Repository<UserView>;
+  @InjectRepository(Role)
+  private readonly roleRepository: Repository<Role>;
   constructor(private readonly eventEmitter: EventEmitter2) {}
 
   async create(userData: ICreateUser): Promise<IUser> {
@@ -36,10 +42,11 @@ export class UserService {
       userPassword: encryptedPassword,
       role: { roleId: userData.roleId },
       userCreatedAt: new Date().toISOString(),
+      file: { fileId: userData.fileId },
     });
 
     const user = await this.userRepository.findOne({
-      relations: { role: true },
+      relations: ['role'],
       loadEagerRelations: false,
       select: { userPassword: false },
       where: { userId },
@@ -53,29 +60,40 @@ export class UserService {
     return user;
   }
 
-  async findAll(): Promise<Array<IUser>> {
-    const users: Array<IUser> = await this.userRepository.find({
-      relations: { role: true },
-      loadEagerRelations: false,
+  async findAll() {
+    const users = await this.userViewRepository.find();
+    return users;
+  }
+
+  async findAllRoles(roleId: string): Promise<UserView[]> {
+    const role = await this.roleRepository.findOne({ where: { roleId } });
+
+    if (!role) {
+      throw new BadRequestException(`Role with id ${roleId} not found`);
+    }
+
+    const users = await this.userViewRepository.find({
+      where: { roleName: role.roleName },
     });
+
+    if (users.length === 0) {
+      throw new BadRequestException(
+        `No users found for the role ${role.roleName}`,
+      );
+    }
 
     return users;
   }
 
-  async findOne(userId: string): Promise<IUser> {
-    return await this.userRepository.findOne({
-      relations: { role: true },
-      loadEagerRelations: false,
-      select: { userPassword: false },
+  async findOne(userId: string) {
+    return await this.userViewRepository.findOne({
       where: { userId },
     });
   }
 
   async findWithCondition(userCondition: IUserFindCondition): Promise<IUser> {
     const user: IUser = await this.userRepository.findOne({
-      relations: {
-        role: true,
-      },
+      relations: ['role'],
       where: { ...userCondition },
     });
 
@@ -126,7 +144,7 @@ export class UserService {
       throw new BadRequestException(`The user ${userId} was not found`);
 
     const user = await this.userRepository.findOne({
-      relations: { role: true },
+      relations: ['role'],
       loadEagerRelations: false,
       select: { userPassword: false },
       where: { userId },
@@ -155,7 +173,7 @@ export class UserService {
       throw new BadRequestException(`user with id ${userId} not found`);
 
     const user = await this.userRepository.findOne({
-      relations: { role: true },
+      relations: ['role'],
       select: { userPassword: false },
       where: { userId },
     });

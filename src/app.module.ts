@@ -13,7 +13,7 @@ import { getEnvPath } from 'common/helper/env.helper';
 import { ServeStaticModule } from '@nestjs/serve-static';
 
 const envFilePath: string = getEnvPath(`${__dirname}/../common/envs`);
-
+console.log(envFilePath);
 @Module({
   imports: [
     ConfigModule.forRoot({ envFilePath, isGlobal: true }),
