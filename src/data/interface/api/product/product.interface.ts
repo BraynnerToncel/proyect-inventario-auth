@@ -1,4 +1,4 @@
-export interface IPdroduct {
+export interface IProduct {
   productId: string;
   productName: string;
   productDescription: string;
@@ -8,6 +8,6 @@ export interface IPdroduct {
   stock: number;
 }
 
-export type ICreateProduct = Omit<IPdroduct, 'productId'>;
+export type ICreateProduct = Omit<IProduct, 'productId'>;
 
 export type IUpdateProduct = Partial<ICreateProduct>;

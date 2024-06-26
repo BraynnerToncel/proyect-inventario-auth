@@ -20,6 +20,7 @@ import { ApiSecurity, ApiTags } from '@nestjs/swagger';
 @Controller('role')
 export class RoleController {
   constructor(private readonly roleService: RoleService) {}
+
   @Post()
   @PermissionRequired(ValidPermission.settings_roles_create)
   create(@Body() createRoleDto: CreateRoleDto) {
