@@ -1,8 +1,8 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
-import { UpdateProductDto } from './dto/update-product.dto';
 import {
   ICreateProduct,
   IProduct,
+  IUpdateProduct,
 } from '@interface/api/product/product.interface';
 import { InjectRepository } from '@nestjs/typeorm';
 import { DeleteResult, Repository } from 'typeorm';
@@ -41,9 +41,9 @@ export class ProductService {
 
   async update(
     productId: string,
-    updateProductDto: UpdateProductDto,
+    updateProduct: IUpdateProduct,
   ): Promise<IProduct> {
-    await this.repositoryProduct.save({ productId, ...updateProductDto });
+    await this.repositoryProduct.save({ productId, ...updateProduct });
     const product = await this.repositoryProduct.findOne({
       where: { productId },
     });

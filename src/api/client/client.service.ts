@@ -1,6 +1,9 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
-import { UpdateClientDto } from './dto/update-client.dto';
-import { IClient, ICreateClient } from '@interface/api/client/client.interface';
+import {
+  IClient,
+  ICreateClient,
+  IUpdateClient,
+} from '@interface/api/client/client.interface';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Client } from '@entity/api/client/client.entity';
 import { DeleteResult, Repository } from 'typeorm';
@@ -36,9 +39,9 @@ export class ClientService {
 
   async update(
     clientId: string,
-    updateClientDto: UpdateClientDto,
+    updateClient: IUpdateClient,
   ): Promise<IClient> {
-    await this.repositorioClient.save({ clientId, ...updateClientDto });
+    await this.repositorioClient.save({ clientId, ...updateClient });
     const client = await this.repositorioClient.findOne({
       where: { clientId },
     });

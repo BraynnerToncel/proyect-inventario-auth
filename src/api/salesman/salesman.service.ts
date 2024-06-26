@@ -1,26 +1,58 @@
 import { Injectable } from '@nestjs/common';
-import { CreateSalesmanDto } from './dto/create-salesman.dto';
-import { UpdateSalesmanDto } from './dto/update-salesman.dto';
+import {
+  ICreateSalesMan,
+  ISalesman,
+  IUpdateSalesMan,
+} from '@interface/api/salesman/salesman.interface';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Salesman } from '@entity/api/salesman/salesman.entity';
+import { Repository } from 'typeorm';
+import { EventEmitter2 } from '@nestjs/event-emitter';
 
 @Injectable()
 export class SalesmanService {
-  create(createSalesmanDto: CreateSalesmanDto) {
-    return 'This action adds a new salesman';
+  @InjectRepository(Salesman)
+  private readonly repositorioSalesman: Repository<Salesman>;
+  constructor(private readonly eventEmitter: EventEmitter2) {}
+
+  async create(createSalesman: ICreateSalesMan): Promise<ISalesman> {
+    const { salesmanId } = await this.repositorioSalesman.save({
+      ...createSalesman,
+    });
+    const salesman = await this.repositorioSalesman.findOne({
+      where: { salesmanId },
+    });
+    this.eventEmitter.emit('emit', {
+      channel: 'salesman/data',
+      data: { ...salesman },
+    });
+    return salesman;
   }
 
-  findAll() {
-    return `This action returns all salesman`;
+  async findAll() {
+    return await this.repositorioSalesman.find();
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} salesman`;
+  async findOne(salesmanId: string) {
+    return await this.repositorioSalesman.findOne({ where: { salesmanId } });
   }
 
-  update(id: number, updateSalesmanDto: UpdateSalesmanDto) {
-    return `This action updates a #${id} salesman`;
+  async update(
+    salesmanId: string,
+    updateSalesman: IUpdateSalesMan,
+  ): Promise<ISalesman> {
+    await this.repositorioSalesman.save({ salesmanId, ...updateSalesman });
+    const salesman = await this.repositorioSalesman.findOne({
+      where: { salesmanId },
+    });
+    this.eventEmitter.emit('emit', {
+      channel: 'salesman/data',
+      data: { ...salesman },
+    });
+    return salesman;
   }
 
-  remove(id: number) {
+  async remove(id: string) {
     return `This action removes a #${id} salesman`;
   }
 }
