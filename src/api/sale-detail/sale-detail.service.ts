@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { UpdateSaleDetailDto } from './dto/update-sale-detail.dto';
 import { SaleDetail } from '@entity/api/sale-detail/sale-detail.entity';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -32,23 +32,15 @@ export class SaleDetailService {
     const queryRunner = this.dataSource.createQueryRunner();
     await queryRunner.connect();
     await queryRunner.startTransaction();
-    console.log('products :>> ', products);
+
     try {
-      const client = await queryRunner.manager.findOne(Client, {
+      const client = await this.clientRepository.findOneOrFail({
         where: { clientId },
       });
 
-      if (!client) {
-        throw new NotFoundException(`Client with ID ${clientId} not found`);
-      }
-
-      const salesman = await queryRunner.manager.findOne(Salesman, {
+      const salesman = await this.salesmanRepository.findOneOrFail({
         where: { salesmanId },
       });
-
-      if (!salesman) {
-        throw new NotFoundException(`Salesman with ID ${salesmanId} not found`);
-      }
 
       const now = new Date();
       const nowInColombia = formatInTimeZone(
@@ -57,16 +49,58 @@ export class SaleDetailService {
         `"yyyy-MM-dd HH:mm:ss.SSSXXX"`,
       );
 
-      const sale = await queryRunner.manager.save(Sale, {
+      const sale = await this.saleRepository.save({
         saleDate: new Date(nowInColombia),
         salesman,
         client,
       });
 
-      await queryRunner.commitTransaction();
-      console.log('sale :>> ', sale);
+      const createdSaleDetails: ISaleDetail[] = [];
 
-      return;
+      for (const productDto of products) {
+        const { productId, quantity } = productDto;
+        const product = await this.productRepository.findOneOrFail({
+          where: { productId },
+        });
+
+        const existingSaleDetail = await this.saleDetailRepository.findOne({
+          where: { sale, product },
+        });
+
+        if (existingSaleDetail) {
+          throw new BadRequestException(
+            `Product ${productId} is already included in this sale`,
+          );
+        }
+
+        const unitPrice =
+          quantity >= 12
+            ? product.productWholesaleValue
+            : product.productUnitValue;
+        const subtotal = unitPrice * quantity;
+
+        sale.total = (sale.total || 0) + subtotal;
+
+        product.stock -= quantity;
+
+        await this.productRepository.save(product);
+        await this.saleRepository.save(sale);
+
+        const saleDetail = this.saleDetailRepository.create({
+          sale,
+          product,
+          quantity,
+          unitPrice,
+          subtotal,
+        });
+
+        const savedSaleDetail =
+          await this.saleDetailRepository.save(saleDetail);
+        createdSaleDetails.push(savedSaleDetail);
+      }
+
+      await queryRunner.commitTransaction();
+      return createdSaleDetails;
     } catch (error) {
       await queryRunner.rollbackTransaction();
       throw error;
