@@ -1,3 +1,5 @@
+import { ISale } from '../sale/sale.interface';
+
 export interface IClient {
   clientId: string;
   clientIdentificacion: string;
@@ -5,6 +7,7 @@ export interface IClient {
   clientLastName: string;
   clientEmail: string;
   clientPhoneNumber: string;
+  sales?: Array<ISale>;
 }
 
 export type ICreateClient = Omit<IClient, 'clientId'>;

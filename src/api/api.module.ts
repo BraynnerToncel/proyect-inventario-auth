@@ -10,6 +10,7 @@ import { APP_GUARD } from '@nestjs/core';
 import { ProductModule } from './product/product.module';
 import { ClientModule } from './client/client.module';
 import { SalesmanModule } from './salesman/salesman.module';
+import { SaleModule } from './sale/sale.module';
 
 @Module({
   imports: [
@@ -22,6 +23,7 @@ import { SalesmanModule } from './salesman/salesman.module';
     ProductModule,
     ClientModule,
     SalesmanModule,
+    SaleModule,
   ],
   providers: [
     {
