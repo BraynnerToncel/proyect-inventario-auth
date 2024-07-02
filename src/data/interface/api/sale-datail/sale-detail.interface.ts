@@ -10,6 +10,8 @@ export interface ISaleDetail {
   subtotal: number;
 }
 
-export type ICreateSaleDetail = Pick<ISaleDetail, 'product' | 'quantity'>;
-
-export type IUpdateSaleDetail = Partial<ICreateSaleDetail>;
+export interface ICreateSaleDetail {
+  saleId: string;
+  productId: string;
+  quantity: number;
+}
