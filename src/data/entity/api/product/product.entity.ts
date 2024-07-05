@@ -22,4 +22,7 @@ export class Product {
 
   @Column({ type: 'int', nullable: false })
   stock: number;
+
+  @Column({ type: 'int', nullable: false })
+  minWholesaleQuantity: number;
 }

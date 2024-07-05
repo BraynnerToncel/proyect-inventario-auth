@@ -4,26 +4,28 @@ import { ViewEntity, ViewColumn } from 'typeorm';
   expression: `
     SELECT 
       "u"."userId" AS "userId", 
-      "u"."userFullName" AS "userFullName", 
-      "u"."userLastName" AS "userLastName", 
-      "u"."userState" AS "userState", 
-      "u"."userEmail" AS "userEmail", 
+      "pi"."personalInformationFullName" AS "userFullName", 
+      "pi"."personalInformationLastName" AS "userLastName", 
+      "pi"."personalInformationEmail" AS "userEmail", 
       "u"."username" AS "username", 
+      "u"."userState" AS "userState", 
       "r"."roleName" AS "roleName", 
       "f"."fileUrl" AS "fileUrl"
     FROM 
       "user" "u"
+    INNER JOIN 
+      "personal_information" "pi" ON "u"."personalInformationId" = "pi"."personalInformationId"
     INNER JOIN 
       "role" "r" ON "u"."roleRoleId" = "r"."roleId"
     LEFT JOIN 
       "file" "f" ON "u"."fileFileId" = "f"."fileId"
     GROUP BY 
       "u"."userId", 
-      "u"."userFullName", 
-      "u"."userLastName", 
-      "u"."userState", 
-      "u"."userEmail", 
+      "pi"."personalInformationFullName", 
+      "pi"."personalInformationLastName", 
+      "pi"."personalInformationEmail", 
       "u"."username", 
+      "u"."userState", 
       "r"."roleName", 
       "f"."fileUrl"
   `,

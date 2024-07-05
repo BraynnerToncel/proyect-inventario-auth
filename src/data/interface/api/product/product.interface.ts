@@ -6,6 +6,7 @@ export interface IProduct {
   productUnitValue: number;
   productWholesaleValue: number;
   stock: number;
+  minWholesaleQuantity: number;
 }
 
 export type ICreateProduct = Omit<IProduct, 'productId'>;
