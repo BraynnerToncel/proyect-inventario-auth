@@ -1,11 +1,11 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { User } from '@entity/api/user/user.entity';
 import {
-  ICreateUser,
   IUser,
   IUserFindCondition,
   IUpdateUser,
   IUserRestorePassword,
+  ICreateUser,
 } from '@interface/api/user/user.interface';
 import { EventEmitter2 } from '@nestjs/event-emitter';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -15,9 +15,11 @@ import {
   UpdateResult,
   EntityNotFoundError,
   DeleteResult,
+  DataSource,
 } from 'typeorm';
 import { Role } from '@entity/api/role/role.entity';
 import { UserView } from '@entity/view/user/user-view.entity';
+import { PersonalInformation } from '@entity/api/personal-information/personal-information.entity';
 
 @Injectable()
 export class UserService {
@@ -27,37 +29,82 @@ export class UserService {
   private readonly userViewRepository: Repository<UserView>;
   @InjectRepository(Role)
   private readonly roleRepository: Repository<Role>;
-  constructor(private readonly eventEmitter: EventEmitter2) {}
+  constructor(
+    private readonly eventEmitter: EventEmitter2,
+    private readonly dataSource: DataSource,
+  ) {}
 
-  async create(userData: ICreateUser): Promise<IUser> {
+  async create(userData: ICreateUser) {
     const encryptedPassword: string = await bcrypt.hash(
       userData.userPassword,
       10,
     );
 
-    const { userId }: IUser = await this.userRepository.save({
-      ...userData,
-      username: userData.username.toLowerCase(),
-      userState: userData.userState ?? true,
-      userPassword: encryptedPassword,
-      role: { roleId: userData.roleId },
-      userCreatedAt: new Date().toISOString(),
-      file: { fileId: userData.fileId },
-    });
+    const queryRunner = this.dataSource.createQueryRunner();
+    await queryRunner.connect();
+    await queryRunner.startTransaction();
 
-    const user = await this.userRepository.findOne({
-      relations: ['role'],
-      loadEagerRelations: false,
-      select: { userPassword: false },
-      where: { userId },
-    });
+    try {
+      const { userId }: IUser = await queryRunner.manager.save(User, {
+        ...userData,
+        username: userData.username.toLowerCase(),
+        userPassword: encryptedPassword,
+        role: { roleId: userData.roleId },
+        userCreatedAt: new Date().toISOString(),
+        file: { fileId: userData.fileId },
+      });
 
-    this.eventEmitter.emit('emit', {
-      channel: 'user/data',
-      data: { ...user },
-    });
+      const user = await queryRunner.manager.findOne(User, {
+        relations: ['role'],
+        loadEagerRelations: false,
+        select: { userPassword: false },
+        where: { userId },
+      });
 
-    return user;
+      if (!user) {
+        throw new BadRequestException('User could not be created');
+      }
+      console.log('user :>> ', user);
+      const role = await queryRunner.manager.findOne(Role, {
+        where: { roleId: userData.roleId },
+      });
+
+      if (!role) {
+        throw new BadRequestException('Role not found');
+      }
+
+      const personalInformation = await queryRunner.manager.save(
+        PersonalInformation,
+        {
+          personalInformationFullName: `${userData.personalInformationFullName} ${userData.personalInformationLastName}`,
+          personalInformationLastName: userData.personalInformationLastName,
+          personalInformationEmail: userData.personalInformationEmail,
+          personalInformationCellNumber: userData.personalInformationCellNumber,
+          personalInformationAddres: userData.personalInformationAddres,
+          personalInformationidentIfication:
+            userData.personalInformationidentification,
+          user,
+        },
+      );
+
+      if (!personalInformation) {
+        throw new BadRequestException('Salesman could not be created');
+      }
+
+      await queryRunner.commitTransaction();
+
+      this.eventEmitter.emit('emit', {
+        channel: 'user/data',
+        data: { ...user },
+      });
+
+      return user;
+    } catch (error) {
+      await queryRunner.rollbackTransaction();
+      throw error;
+    } finally {
+      await queryRunner.release();
+    }
   }
 
   async findAll() {
@@ -91,8 +138,8 @@ export class UserService {
     });
   }
 
-  async findWithCondition(userCondition: IUserFindCondition): Promise<IUser> {
-    const user: IUser = await this.userRepository.findOne({
+  async findWithCondition(userCondition: IUserFindCondition) {
+    const user = await this.userRepository.findOne({
       relations: ['role'],
       where: { ...userCondition },
     });

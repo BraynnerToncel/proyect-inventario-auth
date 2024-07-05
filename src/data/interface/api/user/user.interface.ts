@@ -1,35 +1,34 @@
 import { IFile } from '../file/file.interface';
 import { IRole } from '../role/role.interface';
+import {
+  ICreatePersonalInformation,
+  IPersonalInformation,
+} from '../personal-information/personal-nformation.interface';
 
 export interface IUser {
   userId: string;
-  userFullName: string;
-  userLastName: string;
-  username: string;
-  userEmail: string;
   userPassword: string;
+  username: string;
   userState: boolean;
   role: IRole;
-  file: IFile;
+  file?: IFile;
+  personalInformation?: IPersonalInformation;
 }
 
 export type IUserFindCondition = Partial<Pick<IUser, 'userId' | 'username'>>;
 
 export type ICreateUser = Omit<
   IUser,
-  | 'userId'
-  | 'role'
-  | 'userState'
-  | 'deliveryUser'
-  | 'receivedUser'
-  | 'requestedUser'
-  | 'reservation'
-  | 'file'
-> & {
-  roleId: string;
-  userState: boolean;
-  fileId: string;
-};
+  'userId' | 'role' | 'userState' | 'file' | 'personalInformation'
+> &
+  Pick<IRole, 'roleId'> &
+  Partial<Pick<IFile, 'fileId'>> &
+  ICreatePersonalInformation;
+// & {
+//   roleId: string;
+//   userState: boolean;
+//   fileId?: string;
+// };
 
 export type IUpdateUser = Partial<ICreateUser> &
   Partial<Record<'newPassword', string>> &
