@@ -7,9 +7,9 @@ import {
   CreateDateColumn,
   OneToMany,
 } from 'typeorm';
-import { Salesman } from '../salesman/salesman.entity';
-import { Client } from '../client/client.entity';
 import { SaleDetail } from '../sale-detail/sale-detail.entity';
+import { PersonalInformation } from '../personal-information/personal-information.entity';
+import { Client } from '../client/client.entity';
 
 @Entity()
 export class Sale {
@@ -22,9 +22,12 @@ export class Sale {
   @Column({ type: 'decimal', precision: 10, scale: 2, nullable: true })
   total: number;
 
-  @ManyToOne(() => Salesman, (salesman) => salesman.sales)
-  @JoinColumn({ name: 'salesmanId' })
-  salesman: Salesman;
+  @ManyToOne(
+    () => PersonalInformation,
+    (personalInformation) => personalInformation.sales,
+  )
+  @JoinColumn({ name: 'personalInformationId' })
+  personalInformation: PersonalInformation;
 
   @ManyToOne(() => Client, (client) => client.sales)
   @JoinColumn({ name: 'clientId' })
