@@ -1,14 +1,5 @@
-import {
-  Controller,
-  Get,
-  Post,
-  Body,
-  Param,
-  Delete,
-  Put,
-} from '@nestjs/common';
+import { Controller, Get, Post, Body, Param } from '@nestjs/common';
 import { SaleDetailService } from './sale-detail.service';
-import { UpdateSaleDetailDto } from './dto/update-sale-detail.dto';
 import { ApiTags } from '@nestjs/swagger';
 import { Public } from '@decorator/routes-public.decorator';
 import { CreateSaleDetailDto } from './dto/create-sale-detail.dto';
@@ -18,10 +9,16 @@ import { CreateSaleDetailDto } from './dto/create-sale-detail.dto';
 export class SaleDetailController {
   constructor(private readonly saleDetailService: SaleDetailService) {}
 
-  @Post(':saleId')
+  @Post(':personalInformationId')
   @Public()
-  create(@Body() createSaleDetailDto: CreateSaleDetailDto) {
-    return this.saleDetailService.create(createSaleDetailDto);
+  create(
+    @Body() createSaleDetailDto: CreateSaleDetailDto,
+    @Param('personalInformationId') personalInformationId: string,
+  ) {
+    return this.saleDetailService.create(
+      personalInformationId,
+      createSaleDetailDto,
+    );
   }
 
   @Public()
@@ -34,20 +31,5 @@ export class SaleDetailController {
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.saleDetailService.findOne(+id);
-  }
-
-  @Public()
-  @Put(':id')
-  update(
-    @Param('id') id: string,
-    @Body() updateSaleDetailDto: UpdateSaleDetailDto,
-  ) {
-    return this.saleDetailService.update(+id, updateSaleDetailDto);
-  }
-
-  @Public()
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.saleDetailService.remove(+id);
   }
 }

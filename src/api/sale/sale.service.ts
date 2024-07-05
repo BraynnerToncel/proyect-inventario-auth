@@ -1,6 +1,6 @@
 import { Client } from '@entity/api/client/client.entity';
+import { PersonalInformation } from '@entity/api/personal-information/personal-information.entity';
 import { Sale } from '@entity/api/sale/sale.entity';
-import { Salesman } from '@entity/api/salesman/salesman.entity';
 import { ICreateSale } from '@interface/api/sale/sale.interface';
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { EventEmitter2 } from '@nestjs/event-emitter';
@@ -10,8 +10,8 @@ import { Repository } from 'typeorm';
 
 @Injectable()
 export class SaleService {
-  @InjectRepository(Salesman)
-  private readonly repositorySalesman: Repository<Salesman>;
+  @InjectRepository(PersonalInformation)
+  private readonly repositoryPersonalInformation: Repository<PersonalInformation>;
 
   @InjectRepository(Sale)
   private readonly repositorySale: Repository<Sale>;
@@ -22,7 +22,7 @@ export class SaleService {
   constructor(private readonly eventEmitter: EventEmitter2) {}
 
   async create(createSale: ICreateSale) {
-    const { clientId, salesmanId } = createSale;
+    const { clientId, personalInformationId } = createSale;
 
     const client = await this.repositoryClient.findOne({
       where: { clientId },
@@ -30,11 +30,13 @@ export class SaleService {
     if (!client) {
       throw new NotFoundException(`Client with ID ${clientId} not found`);
     }
-    const salesman = await this.repositorySalesman.findOne({
-      where: { salesmanId },
+    const salesman = await this.repositoryPersonalInformation.findOne({
+      where: { personalInformationId },
     });
     if (!salesman) {
-      throw new NotFoundException(`Salesman with ID ${salesmanId} not found`);
+      throw new NotFoundException(
+        `Salesman with ID ${personalInformationId} not found`,
+      );
     }
     const now = new Date();
     const nowInColombia = formatInTimeZone(
