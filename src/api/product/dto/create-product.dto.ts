@@ -36,4 +36,7 @@ export class CreateProductDto {
 
   @IsInt()
   stock: number;
+
+  @IsInt()
+  minWholesaleQuantity: number;
 }

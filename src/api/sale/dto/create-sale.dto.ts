@@ -2,7 +2,7 @@ import { IsUUID } from 'class-validator';
 
 export class CreateSaleDto {
   @IsUUID()
-  salesmanId: string;
+  personalInformationId: string;
 
   @IsUUID()
   clientId: string;

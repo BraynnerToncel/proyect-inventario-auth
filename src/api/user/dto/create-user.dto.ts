@@ -3,9 +3,8 @@ import {
   MinLength,
   MaxLength,
   IsEmail,
-  IsOptional,
-  IsBoolean,
   IsUUID,
+  IsOptional,
 } from 'class-validator';
 
 export class CreateUserDto {
@@ -22,23 +21,31 @@ export class CreateUserDto {
   @IsString()
   @MinLength(3)
   @MaxLength(32)
-  userFullName: string;
+  personalInformationFullName: string;
 
   @IsString()
   @MinLength(4)
   @MaxLength(32)
-  userLastName: string;
+  personalInformationLastName: string;
 
   @IsEmail()
-  userEmail: string;
+  personalInformationEmail: string;
 
-  @IsOptional()
-  @IsBoolean()
-  userState: boolean;
+  @IsString()
+  personalInformationCellNumber: string;
+
+  @IsString()
+  @MinLength(3)
+  @MaxLength(32)
+  personalInformationAddres: string;
+
+  @IsString()
+  personalInformationidentification: string;
 
   @IsUUID()
   roleId: string;
 
   @IsUUID()
-  fileId: string;
+  @IsOptional()
+  fileId?: string;
 }

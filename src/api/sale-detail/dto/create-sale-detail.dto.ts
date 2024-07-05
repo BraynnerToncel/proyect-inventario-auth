@@ -4,9 +4,6 @@ export class CreateSaleDetailDto {
   @IsUUID()
   clientId: string;
 
-  @IsUUID()
-  salesmanId: string;
-
   @IsArray()
   products: Array<ProductQuantityDto>;
 }
