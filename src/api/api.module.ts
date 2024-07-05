@@ -9,7 +9,7 @@ import { JwtAuthGuard } from '@guard/auth.guard';
 import { APP_GUARD } from '@nestjs/core';
 import { ProductModule } from './product/product.module';
 import { ClientModule } from './client/client.module';
-import { SalesmanModule } from './salesman/salesman.module';
+import { SalesmanModule } from './personal-information/personal-information.module';
 import { SaleModule } from './sale/sale.module';
 import { SaleDetailModule } from './sale-detail/sale-detail.module';
 
