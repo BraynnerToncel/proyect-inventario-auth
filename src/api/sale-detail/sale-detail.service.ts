@@ -80,7 +80,7 @@ export class SaleDetailService {
             : product.productUnitValue;
         const subtotal = unitPrice * quantity;
 
-        sale.total = (sale.total || 0) + subtotal;
+        sale.totalpayable = (sale.totalpayable || 0) + subtotal;
 
         product.stock -= quantity;
 

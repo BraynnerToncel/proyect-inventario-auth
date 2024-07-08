@@ -21,4 +21,7 @@ export class SaleDetail {
 
   @Column({ type: 'decimal', precision: 10, scale: 2 })
   subtotal: number;
+
+  @Column({ type: 'decimal', precision: 10, scale: 2 })
+  total: number;
 }
