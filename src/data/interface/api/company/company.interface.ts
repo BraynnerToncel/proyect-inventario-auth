@@ -9,19 +9,15 @@ export interface ICompany {
   companyEmail: string;
   companyDescription?: string;
   companyWebsite: string;
-  fileUrl: IFile;
+  file?: IFile;
 }
 
-export interface ICreateCompany
-  extends Pick<
-    ICompany,
-    | 'companyName'
-    | 'companyNit'
-    | 'companyAddress'
-    | 'companyPhone'
-    | 'companyEmail'
-    | 'companyWebsite'
-    | 'fileUrl'
-  > {}
+export type ICreateCompany = Omit<
+  ICompany,
+  'companyId' | 'file' | 'companyDescription'
+> &
+  Partial<Pick<IFile, 'fileId'>> & {
+    companyDescription?: string;
+  };
 
-export interface IUpdateCompany extends Partial<ICreateCompany> {}
+export type IUpdateCompany = Partial<ICreateCompany>;
