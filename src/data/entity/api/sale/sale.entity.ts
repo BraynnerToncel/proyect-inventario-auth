@@ -1,3 +1,4 @@
+import { ETypeOfPayment } from './../../../constant/type-of-payment/type-of-payment.constant';
 import {
   Entity,
   PrimaryGeneratedColumn,
@@ -20,7 +21,16 @@ export class Sale {
   saleDate: Date;
 
   @Column({ type: 'decimal', precision: 10, scale: 2, nullable: true })
-  total: number;
+  totalpayable: number;
+
+  @Column({ type: 'enum', enum: ETypeOfPayment })
+  saleTypeOfPayment: ETypeOfPayment;
+
+  @Column({ type: 'decimal', precision: 10, scale: 2, nullable: false })
+  saleMoneyReceived: number;
+
+  @Column({ type: 'decimal', precision: 10, scale: 2, nullable: false })
+  saleMoneyChange: number;
 
   @ManyToOne(
     () => PersonalInformation,
