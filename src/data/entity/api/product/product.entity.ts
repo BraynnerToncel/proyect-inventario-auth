@@ -5,6 +5,9 @@ export class Product {
   @PrimaryGeneratedColumn('uuid')
   productId: string;
 
+  @Column({ type: 'int', nullable: false })
+  productCode: number;
+
   @Column({ type: 'varchar', length: 255, nullable: false })
   productName: string;
 
