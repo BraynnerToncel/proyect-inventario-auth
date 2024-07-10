@@ -1,6 +1,8 @@
 import { IClient } from '@interface/api/client/client.interface';
 import { IPersonalInformation } from '../personal-information/personal-nformation.interface';
 import { ETypeOfPayment } from '@constant/type-of-payment/type-of-payment.constant';
+import { ISaleDetail } from '../sale-datail/sale-detail.interface';
+import { IProduct } from '../product/product.interface';
 
 export interface ISale {
   saleId: string;
@@ -11,10 +13,16 @@ export interface ISale {
   saleMoneyChange: number;
   personalInformation: IPersonalInformation;
   client: IClient;
+  saleDetails: Array<ISaleDetail>;
 }
 
-export interface ICreateSale extends Partial<ISale> {
+export type ICreateSale = Pick<
+  ISale,
+  'saleMoneyReceived' | 'saleTypeOfPayment'
+> & {
   clientId: string;
-  personalInformationId: string;
-}
+  products: Array<Products>;
+};
+
+type Products = Pick<IProduct, 'productId'> & Pick<ISaleDetail, 'quantity'>;
 export type IUpdateSale = Partial<ICreateSale>;

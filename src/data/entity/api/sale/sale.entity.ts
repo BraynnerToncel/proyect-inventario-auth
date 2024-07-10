@@ -29,7 +29,7 @@ export class Sale {
   @Column({ type: 'decimal', precision: 10, scale: 2, nullable: false })
   saleMoneyReceived: number;
 
-  @Column({ type: 'decimal', precision: 10, scale: 2, nullable: false })
+  @Column({ type: 'decimal', precision: 10, scale: 2 })
   saleMoneyChange: number;
 
   @ManyToOne(

@@ -1,27 +1,32 @@
 import { Controller, Get, Post, Body, Param } from '@nestjs/common';
 import { SaleService } from './sale.service';
 import { CreateSaleDto } from './dto/create-sale.dto';
-import { ApiTags } from '@nestjs/swagger';
-import { Public } from '@decorator/routes-public.decorator';
+import { ApiSecurity, ApiTags } from '@nestjs/swagger';
+import { PermissionRequired } from '@decorator/permission.decorator';
+import { ValidPermission } from '@constant/permissions/permissions.constant';
 
 @ApiTags('sale')
+@ApiSecurity('x-token')
 @Controller('sale')
 export class SaleController {
   constructor(private readonly saleService: SaleService) {}
 
-  @Public()
-  @Post()
-  create(@Body() createSaleDto: CreateSaleDto) {
-    return this.saleService.create(createSaleDto);
+  @PermissionRequired(ValidPermission.settings_users_create)
+  @Post(':userId')
+  create(
+    @Body() createSaleDto: CreateSaleDto,
+    @Param('userId') userId: string,
+  ) {
+    return this.saleService.create(userId, createSaleDto);
   }
 
-  @Public()
+  @PermissionRequired(ValidPermission.settings_users_create)
   @Get()
   findAll() {
     return this.saleService.findAll();
   }
 
-  @Public()
+  @PermissionRequired(ValidPermission.settings_users_create)
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.saleService.findOne(id);
