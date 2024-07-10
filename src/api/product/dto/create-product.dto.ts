@@ -5,6 +5,8 @@ import {
   MinLength,
   IsNumber,
   IsPositive,
+  IsArray,
+  ValidateNested,
 } from 'class-validator';
 import { Type } from 'class-transformer';
 
@@ -39,4 +41,14 @@ export class CreateProductDto {
 
   @IsInt()
   minWholesaleQuantity: number;
+
+  @IsArray()
+  @ValidateNested({ each: true })
+  @Type(() => CreateProductTaxDto)
+  tax: Array<CreateProductTaxDto>;
+}
+
+export class CreateProductTaxDto {
+  @IsString()
+  taxesId: string;
 }

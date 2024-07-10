@@ -1,11 +1,22 @@
-import { Entity, PrimaryGeneratedColumn, Column } from 'typeorm';
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  ManyToMany,
+  JoinTable,
+  Generated,
+  Index,
+} from 'typeorm';
+import { Taxes } from '../taxes/taxes.entity';
 
 @Entity()
+@Index(['productName', 'productDescription'], { unique: true })
 export class Product {
   @PrimaryGeneratedColumn('uuid')
   productId: string;
 
-  @Column({ type: 'int', nullable: false })
+  @Column()
+  @Generated('increment')
   productCode: number;
 
   @Column({ type: 'varchar', length: 255, nullable: false })
@@ -28,4 +39,8 @@ export class Product {
 
   @Column({ type: 'int', nullable: false })
   minWholesaleQuantity: number;
+
+  @ManyToMany(() => Taxes, (taxes) => taxes.product)
+  @JoinTable({ name: 'product_has_taxes' })
+  tax: Array<Taxes>;
 }
