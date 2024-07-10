@@ -17,7 +17,6 @@ import {
 import { ValidPermission } from '@constant/permissions/permissions.constant';
 import { PermissionRequired } from '@decorator/permission.decorator';
 import { IUser } from '@interface/api/user/user.interface';
-import { Public } from '@decorator/routes-public.decorator';
 import { ApiSecurity, ApiTags } from '@nestjs/swagger';
 
 @ApiTags('user')
@@ -27,7 +26,7 @@ export class UserController {
   constructor(private readonly userService: UserService) {}
 
   @Post()
-  @Public()
+  @PermissionRequired(ValidPermission.settings_users_create)
   public create(@Body() userData: CreateUserDto) {
     return this.userService.create(userData);
   }

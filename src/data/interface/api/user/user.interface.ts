@@ -24,11 +24,6 @@ export type ICreateUser = Omit<
   Pick<IRole, 'roleId'> &
   Partial<Pick<IFile, 'fileId'>> &
   ICreatePersonalInformation;
-// & {
-//   roleId: string;
-//   userState: boolean;
-//   fileId?: string;
-// };
 
 export type IUpdateUser = Partial<ICreateUser> &
   Partial<Record<'newPassword', string>> &

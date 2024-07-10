@@ -51,7 +51,7 @@ export class UserService {
         userPassword: encryptedPassword,
         role: { roleId: userData.roleId },
         userCreatedAt: new Date().toISOString(),
-        file: { fileId: userData.fileId },
+        // file: { fileId: userData.fileId },
       });
 
       const user = await queryRunner.manager.findOne(User, {
