@@ -4,11 +4,10 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Sale } from '@entity/api/sale/sale.entity';
 import { Product } from '@entity/api/product/product.entity';
 import { DataSource, Repository } from 'typeorm';
-import { ISaleDetail } from '@interface/api/sale-datail/sale-detail.interface';
-import { CreateSaleDetailDto } from './dto/create-sale-detail.dto';
 import { Client } from '@entity/api/client/client.entity';
-import { formatInTimeZone } from 'date-fns-tz';
 import { PersonalInformation } from '@entity/api/personal-information/personal-information.entity';
+import { formatInTimeZone } from 'date-fns-tz';
+import { ICreateSale } from '@interface/api/sale/sale.interface';
 
 @Injectable()
 export class SaleDetailService {
@@ -26,9 +25,10 @@ export class SaleDetailService {
 
   async create(
     personalInformationId: string,
-    createSaleDetailDto: CreateSaleDetailDto,
-  ): Promise<ISaleDetail[]> {
-    const { clientId, products } = createSaleDetailDto;
+    createSaleDetailDto: ICreateSale,
+  ) {
+    const { clientId, products, saleTypeOfPayment, saleMoneyReceived } =
+      createSaleDetailDto;
     const queryRunner = this.dataSource.createQueryRunner();
     await queryRunner.connect();
     await queryRunner.startTransaction();
@@ -47,21 +47,25 @@ export class SaleDetailService {
       const nowInColombia = formatInTimeZone(
         now,
         'America/Bogota',
-        `"yyyy-MM-dd HH:mm:ss.SSSXXX"`,
+        'yyyy-MM-dd HH:mm:ss.SSSXXX',
       );
 
-      const sale = await this.saleRepository.save({
+      const sale = this.saleRepository.create({
         saleDate: new Date(nowInColombia),
         personalInformation,
         client,
+        saleTypeOfPayment: saleTypeOfPayment,
+        saleMoneyReceived,
+        totalpayable: 0,
+        saleMoneyChange: 0,
       });
-
-      const createdSaleDetails: ISaleDetail[] = [];
 
       for (const productDto of products) {
         const { productId, quantity } = productDto;
         const product = await this.productRepository.findOne({
           where: { productId },
+          loadEagerRelations: false,
+          relations: { tax: true },
         });
         const cantMin = product.minWholesaleQuantity;
         const existingSaleDetail = await this.saleDetailRepository.findOne({
@@ -80,12 +84,18 @@ export class SaleDetailService {
             : product.productUnitValue;
         const subtotal = unitPrice * quantity;
 
-        sale.totalpayable = (sale.totalpayable || 0) + subtotal;
+        let saleDetailTotalTaxes = 0;
+
+        for (const tax of product.tax) {
+          saleDetailTotalTaxes += subtotal * (tax.percentageOfTax / 100);
+        }
+        console.log(saleDetailTotalTaxes);
+
+        sale.totalpayable += subtotal + saleDetailTotalTaxes;
 
         product.stock -= quantity;
 
         await this.productRepository.save(product);
-        await this.saleRepository.save(sale);
 
         const saleDetail = this.saleDetailRepository.create({
           sale,
@@ -93,15 +103,20 @@ export class SaleDetailService {
           quantity,
           unitPrice,
           subtotal,
+          saleDetailTotalTaxes,
+          total: subtotal + saleDetailTotalTaxes,
         });
 
-        const savedSaleDetail =
-          await this.saleDetailRepository.save(saleDetail);
-        createdSaleDetails.push(savedSaleDetail);
+        console.log('saleDetail :>> ', saleDetail);
+
+        await queryRunner.manager.save(saleDetail);
       }
 
+      sale.saleMoneyChange = saleMoneyReceived - sale.totalpayable;
+      await this.saleRepository.save(sale);
+
       await queryRunner.commitTransaction();
-      return createdSaleDetails;
+      return 'create';
     } catch (error) {
       await queryRunner.rollbackTransaction();
       throw error;
@@ -109,7 +124,6 @@ export class SaleDetailService {
       await queryRunner.release();
     }
   }
-
   findAll() {
     return `This action returns all saleDetail`;
   }

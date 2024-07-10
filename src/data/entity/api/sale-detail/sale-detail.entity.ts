@@ -23,5 +23,8 @@ export class SaleDetail {
   subtotal: number;
 
   @Column({ type: 'decimal', precision: 10, scale: 2 })
+  saleDetailTotalTaxes: number;
+
+  @Column({ type: 'decimal', precision: 10, scale: 2 })
   total: number;
 }
