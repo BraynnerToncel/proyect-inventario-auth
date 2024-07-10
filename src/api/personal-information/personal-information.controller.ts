@@ -1,42 +1,28 @@
 import { Controller, Get, Param, Delete } from '@nestjs/common';
 
 import { ApiTags } from '@nestjs/swagger';
-import { Public } from '@decorator/routes-public.decorator';
 import { PersonalInformationService } from './personal-information.service';
+import { PermissionRequired } from '@decorator/permission.decorator';
+import { ValidPermission } from '@constant/permissions/permissions.constant';
 
 @ApiTags('salesman')
 @Controller('salesman')
 export class PersonalInformationController {
   constructor(private readonly salesmanService: PersonalInformationService) {}
 
-  // @Post()
-  // @Public()
-  // create(@Body() createSalesmanDto: CreateSalesmanDto) {
-  //   return this.salesmanService.create(createSalesmanDto);
-  // }
-
-  @Public()
   @Get()
+  @PermissionRequired(ValidPermission.settings_users_create)
   findAll() {
     return this.salesmanService.findAll();
   }
 
-  @Public()
+  @PermissionRequired(ValidPermission.settings_users_create)
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.salesmanService.findOne(id);
   }
 
-  // @Public()
-  // @Put(':id')
-  // update(
-  //   @Param('id') id: string,
-  //   @Body() updateSalesmanDto: UpdateSalesmanDto,
-  // ) {
-  //   return this.salesmanService.update(id, updateSalesmanDto);
-  // }
-
-  @Public()
+  @PermissionRequired(ValidPermission.settings_users_create)
   @Delete(':id')
   remove(@Param('id') id: string) {
     return this.salesmanService.remove(id);
