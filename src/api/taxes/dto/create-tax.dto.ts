@@ -6,4 +6,7 @@ export class CreateTaxDto {
 
   @IsNumber()
   percentageOfTax: number;
+
+  @IsString()
+  taxesIdentifier: string;
 }

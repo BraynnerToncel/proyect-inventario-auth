@@ -10,7 +10,10 @@ import {
 import { TaxesService } from './taxes.service';
 import { CreateTaxDto } from './dto/create-tax.dto';
 import { UpdateTaxDto } from './dto/update-tax.dto';
+import { ApiSecurity, ApiTags } from '@nestjs/swagger';
 
+@ApiTags('taxes')
+@ApiSecurity('x-token')
 @Controller('taxes')
 export class TaxesController {
   constructor(private readonly taxesService: TaxesService) {}
