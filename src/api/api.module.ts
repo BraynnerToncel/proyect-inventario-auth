@@ -12,6 +12,8 @@ import { ClientModule } from './client/client.module';
 import { SalesmanModule } from './personal-information/personal-information.module';
 import { SaleModule } from './sale/sale.module';
 import { SaleDetailModule } from './sale-detail/sale-detail.module';
+import { CompanyModule } from './company/company.module';
+import { TaxesModule } from './taxes/taxes.module';
 
 @Module({
   imports: [
@@ -26,6 +28,9 @@ import { SaleDetailModule } from './sale-detail/sale-detail.module';
     SalesmanModule,
     SaleModule,
     SaleDetailModule,
+    CompanyModule,
+    TaxesModule,
+    // ReportsModule,
   ],
   providers: [
     {
