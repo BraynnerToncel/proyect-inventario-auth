@@ -20,11 +20,17 @@ export class Sale {
   @CreateDateColumn({ type: 'timestamp' })
   saleDate: Date;
 
-  @Column({ type: 'decimal', precision: 10, scale: 2, nullable: true })
-  totalpayable: number;
+  @Column({ type: 'decimal', precision: 10, scale: 2 })
+  subtotal: number;
 
   @Column({ type: 'enum', enum: ETypeOfPayment })
   saleTypeOfPayment: ETypeOfPayment;
+
+  @Column({ type: 'decimal', precision: 10, scale: 2 })
+  saleDetailTotalTaxes: number;
+
+  @Column({ type: 'decimal', precision: 10, scale: 2, nullable: true })
+  totalpayable: number;
 
   @Column({ type: 'decimal', precision: 10, scale: 2, nullable: false })
   saleMoneyReceived: number;

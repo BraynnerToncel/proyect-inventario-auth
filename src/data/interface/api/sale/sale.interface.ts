@@ -7,10 +7,12 @@ import { IProduct } from '../product/product.interface';
 export interface ISale {
   saleId: string;
   saleDate: Date;
+  subtotal: number;
   totalpayable: number;
   saleTypeOfPayment: ETypeOfPayment;
   saleMoneyReceived: number;
   saleMoneyChange: number;
+  saleDetailTotalTaxes: number;
   personalInformation: IPersonalInformation;
   client: IClient;
   saleDetails: Array<ISaleDetail>;

@@ -89,6 +89,8 @@ export class SaleService {
         personalInformation: user.personalInformation,
         client,
         saleMoneyChange: 0,
+        subtotal: 0,
+        saleDetailTotalTaxes: 0,
       });
 
       await queryRunner.manager.save(sale);
@@ -144,6 +146,8 @@ export class SaleService {
 
         sale.totalpayable = totalPayable;
         sale.saleMoneyChange = saleMoneyReceived - totalPayable;
+        sale.subtotal = subtotal;
+        sale.saleDetailTotalTaxes = saleDetailTotalTaxes;
 
         if (sale.saleMoneyChange < 0) {
           throw new ConflictException(
