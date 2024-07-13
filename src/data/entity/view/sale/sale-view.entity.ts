@@ -1,8 +1,36 @@
 import { ViewEntity, ViewColumn } from 'typeorm';
 
+interface Client {
+  clientName: string;
+  clientIdentificacion: string;
+  clientEmail: string;
+}
+
+interface SaleDetail {
+  saleDetailId: string;
+  quantity: number;
+  unitPrice: number;
+  subtotal: number;
+  saleDetailTotalTaxes: number;
+  total: number;
+  productCode: string;
+  taxesIdentifier: string;
+}
+
+interface Sale {
+  saleDate: string;
+  totalpayable: number;
+  saleTypeOfPayment: string;
+  saleDetailTotalTaxes: number;
+  subtotal: number;
+  saleMoneyReceived: number;
+  saleMoneyChange: number;
+}
+
 @ViewEntity({
   expression: `
     SELECT
+      s."saleId" AS "saleId",
       jsonb_build_object(
         'clientName', cl."clientName",
         'clientIdentificacion', cl."clientIdentificacion",
@@ -13,14 +41,16 @@ import { ViewEntity, ViewColumn } from 'typeorm';
         'quantity', sd."quantity",
         'unitPrice', sd."unitPrice",
         'subtotal', sd."subtotal",
-        'saleDetailTotalTaxes', sd."saleDetailTotalTaxes",
+        'saleDetailTotalTaxes', sd."saleDetailTotalTaxes",  -- Aquí se usa sd para saleDetailTotalTaxes
         'total', sd."total",
         'productCode', p."productCode",
         'taxesIdentifier', t."taxesIdentifier"
-      )) AS saleDetail,
+      )) AS "saleDetail",
       jsonb_build_object(
         'saleDate', s."saleDate",
         'totalpayable', s."totalpayable",
+        'subtotal' , s."subtotal",
+        'saleDetailTotalTaxes' , s."saleDetailTotalTaxes",  -- Aquí se usa s para saleDetailTotalTaxes
         'saleTypeOfPayment', s."saleTypeOfPayment",
         'saleMoneyReceived', s."saleMoneyReceived",
         'saleMoneyChange', s."saleMoneyChange"
@@ -38,6 +68,7 @@ import { ViewEntity, ViewColumn } from 'typeorm';
     LEFT JOIN
       "taxes" t ON pht."taxesTaxesId" = t."taxesId"
     GROUP BY
+      s."saleId",
       cl."clientName",
       cl."clientIdentificacion",
       cl."clientEmail",
@@ -50,11 +81,14 @@ import { ViewEntity, ViewColumn } from 'typeorm';
 })
 export class SaleView {
   @ViewColumn()
-  client: object;
+  saleId: string;
 
   @ViewColumn()
-  saleDetail: object;
+  client: Client;
 
   @ViewColumn()
-  sale: object;
+  saleDetail: SaleDetail[];
+
+  @ViewColumn()
+  sale: Sale;
 }

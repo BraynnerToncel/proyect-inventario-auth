@@ -11,6 +11,8 @@ import { ResponseInterceptor } from '@interceptor/response/response.interceptor'
 import { MorganInterceptor, MorganModule } from 'nest-morgan';
 import { getEnvPath } from 'common/helper/env.helper';
 import { ServeStaticModule } from '@nestjs/serve-static';
+import { PrinterModule } from './printer/printer.module';
+import { ReportsModule } from './reports/reports/reports.module';
 
 const envFilePath: string = getEnvPath(`${__dirname}/../common/envs`);
 console.log(envFilePath);
@@ -31,6 +33,8 @@ console.log(envFilePath);
     ApiModule,
     MorganModule,
     SharedModule,
+    PrinterModule,
+    ReportsModule,
   ],
   controllers: [],
   providers: [
