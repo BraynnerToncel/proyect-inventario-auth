@@ -6,7 +6,7 @@
     "plugins": ["@nestjs/swagger"],
     "assets": [
       {
-        "include": "../common/envs/*",
+        "include": "../common/*/*",
         "outDir": "dist/common",
         "watchAssets": true
       }
