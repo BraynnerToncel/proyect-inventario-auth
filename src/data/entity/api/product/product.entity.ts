@@ -6,8 +6,11 @@ import {
   JoinTable,
   Generated,
   Index,
+  ManyToOne,
+  JoinColumn,
 } from 'typeorm';
-import { Taxes } from '../taxes/taxes.entity';
+import { Tax } from '../tax/tax.entity';
+import { SedeCompany } from '../sede-company/sede-company.entity';
 
 @Entity()
 @Index(['productName', 'productDescription'], { unique: true })
@@ -40,7 +43,11 @@ export class Product {
   @Column({ type: 'int', nullable: false })
   minWholesaleQuantity: number;
 
-  @ManyToMany(() => Taxes, (taxes) => taxes.product)
+  @ManyToMany(() => Tax, (tax) => tax.product)
   @JoinTable({ name: 'product_has_taxes' })
-  tax: Array<Taxes>;
+  tax: Array<Tax>;
+
+  @ManyToOne(() => SedeCompany, (sedeCompany) => sedeCompany.product)
+  @JoinColumn({ name: 'sedeId' })
+  sede: SedeCompany;
 }

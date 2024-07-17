@@ -14,7 +14,7 @@ interface SaleDetail {
   saleDetailTotalTaxes: number;
   total: number;
   productCode: string;
-  taxesIdentifier: string;
+  taxIdentifier: string;
 }
 
 interface Sale {
@@ -44,7 +44,7 @@ interface Sale {
         'saleDetailTotalTaxes', sd."saleDetailTotalTaxes",  -- Aquí se usa sd para saleDetailTotalTaxes
         'total', sd."total",
         'productCode', p."productCode",
-        'taxesIdentifier', t."taxesIdentifier"
+        'taxIdentifier', t."taxIdentifier"
       )) AS "saleDetail",
       jsonb_build_object(
         'saleDate', s."saleDate",
@@ -66,7 +66,7 @@ interface Sale {
     LEFT JOIN
       "product_has_taxes" pht ON p."productId" = pht."productProductId"
     LEFT JOIN
-      "taxes" t ON pht."taxesTaxesId" = t."taxesId"
+      "tax" t ON pht."taxTaxId" = t."taxId"
     GROUP BY
       s."saleId",
       cl."clientName",

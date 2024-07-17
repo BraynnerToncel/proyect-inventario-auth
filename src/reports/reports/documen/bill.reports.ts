@@ -18,7 +18,7 @@ export function billReport(saleData: SaleView): TDocumentDefinitions {
         unitPrice: detail.unitPrice,
         quantity: detail.quantity,
         subtotal: detail.subtotal,
-        taxesIdentifier: detail.taxesIdentifier,
+        taxesIdentifier: detail.taxIdentifier,
         saleDetailTotalTaxes: detail.saleDetailTotalTaxes,
         total: detail.total,
       }))

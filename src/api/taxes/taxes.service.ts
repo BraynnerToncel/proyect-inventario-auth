@@ -2,27 +2,27 @@ import { EventEmitter2 } from '@nestjs/event-emitter';
 import { BadRequestException, Injectable } from '@nestjs/common';
 import {
   ICreateTax,
-  ITaxes,
+  ITax,
   IUpdateTax,
-} from '@interface/api/taxes/taxes.interfaces';
+} from '@interface/api/tax/tax.interfaces';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Taxes } from '@entity/api/taxes/taxes.entity';
+import { Tax } from '@entity/api/tax/tax.entity';
 import { DeleteResult, Repository } from 'typeorm';
 
 @Injectable()
 export class TaxesService {
-  @InjectRepository(Taxes)
-  private readonly repositoryTaxes: Repository<Taxes>;
+  @InjectRepository(Tax)
+  private readonly repositoryTaxes: Repository<Tax>;
 
   constructor(private readonly eventEmitter: EventEmitter2) {}
 
   async create(createTax: ICreateTax) {
-    const { taxesId } = await this.repositoryTaxes.save({
+    const { taxId } = await this.repositoryTaxes.save({
       ...createTax,
     });
 
     const taxes = await this.repositoryTaxes.findOne({
-      where: { taxesId },
+      where: { taxId },
     });
     this.eventEmitter.emit('emit', {
       channel: 'taxes/data',
@@ -35,16 +35,16 @@ export class TaxesService {
     return await this.repositoryTaxes.find();
   }
 
-  async findOne(taxesId: string) {
+  async findOne(taxId: string) {
     return await this.repositoryTaxes.findOne({
-      where: { taxesId },
+      where: { taxId },
     });
   }
 
-  async update(taxesId: string, updateTax: IUpdateTax): Promise<ITaxes> {
-    await this.repositoryTaxes.save({ taxesId, ...updateTax });
+  async update(taxId: string, updateTax: IUpdateTax): Promise<ITax> {
+    await this.repositoryTaxes.save({ taxId, ...updateTax });
     const taxes = await this.repositoryTaxes.findOne({
-      where: { taxesId },
+      where: { taxId },
     });
     this.eventEmitter.emit('emit', {
       channel: 'taxes/data',

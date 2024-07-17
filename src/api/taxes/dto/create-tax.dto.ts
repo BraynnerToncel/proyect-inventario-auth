@@ -2,11 +2,11 @@ import { IsNumber, IsString } from 'class-validator';
 
 export class CreateTaxDto {
   @IsString()
-  taxesName: string;
+  taxName: string;
 
   @IsNumber()
   percentageOfTax: number;
 
   @IsString()
-  taxesIdentifier: string;
+  taxIdentifier: string;
 }

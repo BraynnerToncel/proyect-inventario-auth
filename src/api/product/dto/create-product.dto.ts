@@ -50,5 +50,5 @@ export class CreateProductDto {
 
 export class CreateProductTaxDto {
   @IsString()
-  taxesId: string;
+  taxId: string;
 }

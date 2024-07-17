@@ -1,4 +1,4 @@
-import { ITaxes } from '../taxes/taxes.interfaces';
+import { ITax } from '../tax/tax.interfaces';
 
 export interface IProduct {
   productId: string;
@@ -10,13 +10,13 @@ export interface IProduct {
   stock: number;
   minWholesaleQuantity: number;
   productCode: number;
-  tax: Array<ITaxes>;
+  tax: Array<ITax>;
 }
 
 export type ICreateProduct = Omit<
   IProduct,
   'productId' | 'tax' | 'productCode'
 > &
-  Record<'tax', Array<Pick<ITaxes, 'taxesId'>>>;
+  Record<'tax', Array<Pick<ITax, 'taxId'>>>;
 
 export type IUpdateProduct = Partial<ICreateProduct>;

@@ -1,5 +1,13 @@
-import { Entity, PrimaryGeneratedColumn, Column, OneToMany } from 'typeorm';
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  OneToMany,
+  ManyToOne,
+  JoinColumn,
+} from 'typeorm';
 import { Sale } from '../sale/sale.entity';
+import { SedeCompany } from '../sede-company/sede-company.entity';
 
 @Entity()
 export class Client {
@@ -23,4 +31,8 @@ export class Client {
 
   @OneToMany(() => Sale, (sale) => sale.client)
   sales: Sale[];
+
+  @ManyToOne(() => SedeCompany, (sedeCompany) => sedeCompany.client)
+  @JoinColumn({ name: 'sedeId' })
+  sede: SedeCompany;
 }
